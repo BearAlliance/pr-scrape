@@ -1,5 +1,7 @@
 ## Development
 
+The server needs a GitHub token `GH_TOKEN` set as an env var.
+
 Run the development server:
 
 ```bash

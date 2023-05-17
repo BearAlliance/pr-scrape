@@ -1,16 +1,35 @@
 import { Octokit } from "octokit";
-import { PullRequest, SimplePullRequest } from "@octokit/webhooks-types";
-import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types";
-import { OctokitResponse } from "@octokit/types";
+import { PullRequest } from "@octokit/webhooks-types";
+
+let octokit: Octokit;
 
 // Authenticate with octokit
-const octokit = new Octokit({
-  auth: process.env.GH_TOKEN,
-});
+function getOctokit() {
+  if (octokit) {
+    return octokit;
+  } else {
+    const token = process.env.GH_TOKEN;
+    console.log(token);
+    octokit = new Octokit({
+      auth: token,
+    });
+    return octokit;
+  }
+}
+
+// verify octokit authentication
+export async function isAPIKeyValid() {
+  try {
+    await getOctokit().rest.users.getAuthenticated();
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 // get all closed PRs for a given repo
 export async function getMergedPRs(owner: string, repo: string) {
-  const response = await octokit.rest.pulls.list({
+  const response = await getOctokit().rest.pulls.list({
     owner,
     repo,
     state: "closed",
@@ -25,7 +44,7 @@ export async function getReviewComments(
   repo: string,
   prNumber: number
 ) {
-  const { data } = await octokit.rest.pulls.listReviewComments({
+  const { data } = await getOctokit().rest.pulls.listReviewComments({
     owner,
     repo,
     pull_number: prNumber,
@@ -48,7 +67,7 @@ export async function getApproverCount(
   repo: string,
   prNumber: number
 ): Promise<number> {
-  const { data } = await octokit.rest.pulls.listReviews({
+  const { data } = await getOctokit().rest.pulls.listReviews({
     owner,
     repo,
     pull_number: prNumber,
@@ -83,7 +102,7 @@ export async function getFailedBuildChecks(
 
 // get build checks for a PR
 async function getBuildChecks(owner: string, repo: string, prNumber: number) {
-  const { data } = await octokit.rest.checks.listForRef({
+  const { data } = await getOctokit().rest.checks.listForRef({
     owner,
     repo,
     ref: `pull/${prNumber}/head`,

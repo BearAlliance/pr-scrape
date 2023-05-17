@@ -1,16 +1,21 @@
 "use client";
 import { FormEvent, FormEventHandler, useState } from "react";
 import { useRouter } from "next/navigation";
+import { FailedTag, SuccessTag } from "@/components/tags";
+import { isAPIKeyValid } from "@/pr-info";
 
 export default function Home() {
   const [owner, setOwner] = useState("");
   const [repo, setRepo] = useState("");
+  const [apiKeyValid, setApiKeyValid] = useState(false);
   const router = useRouter();
   const handleSubmit: FormEventHandler = (event: FormEvent) => {
     event.preventDefault();
     // redirect to owner/repo
     router.push(`/pr/${owner}/${repo}`);
   };
+
+  isAPIKeyValid().then((valid) => setApiKeyValid(valid));
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -87,6 +92,9 @@ export default function Home() {
                     </button>
                   </div>
                 </form>
+
+                {apiKeyValid && <SuccessTag>Valid API Key</SuccessTag>}
+                {!apiKeyValid && <FailedTag>Invalid API Key</FailedTag>}
               </div>
             </main>
           </div>
