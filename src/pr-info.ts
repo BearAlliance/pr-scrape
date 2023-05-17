@@ -1,8 +1,6 @@
 import { Octokit } from "octokit";
 import { PullRequest, SimplePullRequest } from "@octokit/webhooks-types";
-import {
-  RestEndpointMethodTypes
-} from "@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types";
+import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types";
 import { OctokitResponse } from "@octokit/types";
 
 // Authenticate with octokit
@@ -16,17 +14,21 @@ export async function getMergedPRs(owner: string, repo: string) {
     owner,
     repo,
     state: "closed",
-    limit: 4
+    limit: 4,
   });
   return response.data;
 }
 
 // get the number of review comments on a PR
-export async function getReviewComments(owner: string, repo: string, prNumber: number) {
+export async function getReviewComments(
+  owner: string,
+  repo: string,
+  prNumber: number
+) {
   const { data } = await octokit.rest.pulls.listReviewComments({
     owner,
     repo,
-    pull_number: prNumber
+    pull_number: prNumber,
   });
   return data.length;
 }
@@ -41,18 +43,26 @@ export function getDuration(pr: PullRequest): string {
 }
 
 // get the number of PR approvers
-export async function getApproverCount(owner: string, repo: string, prNumber: number): Promise<number> {
+export async function getApproverCount(
+  owner: string,
+  repo: string,
+  prNumber: number
+): Promise<number> {
   const { data } = await octokit.rest.pulls.listReviews({
     owner,
     repo,
-    pull_number: prNumber
+    pull_number: prNumber,
   });
   const approvers = data.filter((review) => review.state === "APPROVED");
   return approvers.length;
 }
 
 // get the number of passing build checks for a PR
-export async function getPassingBuildChecks(owner: string, repo: string, prNumber: number): Promise<number> {
+export async function getPassingBuildChecks(
+  owner: string,
+  repo: string,
+  prNumber: number
+): Promise<number> {
   const checks = await getBuildChecks(owner, repo, prNumber);
   const passingChecks = checks.filter(
     (check) => check.conclusion === "success"
@@ -61,7 +71,11 @@ export async function getPassingBuildChecks(owner: string, repo: string, prNumbe
 }
 
 // get the number of failed build checks for a PR
-export async function getFailedBuildChecks(owner: string, repo: string, prNumber: number) {
+export async function getFailedBuildChecks(
+  owner: string,
+  repo: string,
+  prNumber: number
+) {
   const checks = await getBuildChecks(owner, repo, prNumber);
   const failedChecks = checks.filter((check) => check.conclusion === "failure");
   return failedChecks.length;
@@ -72,7 +86,7 @@ async function getBuildChecks(owner: string, repo: string, prNumber: number) {
   const { data } = await octokit.rest.checks.listForRef({
     owner,
     repo,
-    ref: `pull/${prNumber}/head`
+    ref: `pull/${prNumber}/head`,
   });
   return data.check_runs;
 }

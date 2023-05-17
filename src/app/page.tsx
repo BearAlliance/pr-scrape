@@ -1,17 +1,17 @@
-'use client';
+"use client";
 import { FormEvent, FormEventHandler, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [owner, setOwner] = useState('');
-  const [repo, setRepo] = useState('');
+  const [owner, setOwner] = useState("");
+  const [repo, setRepo] = useState("");
   const router = useRouter();
-  const handleSubmit:FormEventHandler = (event: FormEvent) => {
+  const handleSubmit: FormEventHandler = (event: FormEvent) => {
     event.preventDefault();
     // redirect to owner/repo
-    router.push(`/pr/${owner}/${repo}`)
-  }
-  
+    router.push(`/pr/${owner}/${repo}`);
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div>
@@ -46,9 +46,9 @@ export default function Home() {
                   workflow
                 </p>
 
-
-
-                <form onSubmit={handleSubmit} className="mt-8 grid grid-cols-6 gap-6">
+                <form
+                  onSubmit={handleSubmit}
+                  className="mt-8 grid grid-cols-6 gap-6">
                   <div className="col-span-6 sm:col-span-3">
                     <label
                       htmlFor="owner"
